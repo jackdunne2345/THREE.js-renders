@@ -95,25 +95,25 @@ so we can view the object. By default it is also 0
 // camera.rotation.z = Math.PI * 4;
 
 
-// this listens for keypresses and excutes 
+// this listens for keypresses and excutes move function part of the pointerlock
 document.addEventListener('keydown', function (){
     if (event.key === "w" || event.key === "W") {
-        camera.position.z +=0.09;
+       controls.moveForward(0.2);
   }}, false);
 
 document.addEventListener('keydown', function (){
     if (event.key === "s" || event.key === "S") {
-    camera.position.z +=-0.09;
+    controls.moveForward(-0.2);
   }}, false);
 
 document.addEventListener('keydown', function (){
     if (event.key === "a" || event.key === "A") {
-    camera.position.x +=-0.09;
+   controls.moveRight(-0.2);
   }}, false);
 
 document.addEventListener('keydown', function (){
     if (event.key === "d" || event.key === "D") {
-    camera.position.x +=0.09;
+    controls.moveRight(0.2);
   }}, false);
 
 
@@ -131,7 +131,7 @@ function animate() {
     
     cube.rotation.x += 0.01;
     cube.rotation.y += 0.01;
-	renderer.render( scene, camera );
+	 renderer.render( scene, camera );
    
 }
 animate();
