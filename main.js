@@ -4,135 +4,157 @@ import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockCont
 
 
 
+const moveSpeed = 0.25;
 
 
-const loader = new THREE.TextureLoader();
-
-const black_Noise_Texture = new THREE.TextureLoader().load( "textures/scenebackground.jpg" );
-//This defines how the texture is wrapped horizontally and corresponds to U in UV mapping.
-black_Noise_Texture.wrapS = THREE.RepeatWrapping;
-
-//This defines how the texture is wrapped vertically and corresponds to V in UV mapping.
-black_Noise_Texture.wrapT = THREE.RepeatWrapping;
 
 /*
+LINE 10: 
+wrapS defines how the texture is wrapped horizontally and corresponds to U in UV mapping.
+
+LINE 11:
+wrapT defines how the texture is wrapped vertically and corresponds to V in UV mapping.
+
+LINE 17:
 How many times the texture is repeated across the surface,    
 If repeat is set greater than 1 in either direction, 
 the corresponding Wrap parameter 
 should also be set to THREE.RepeatWrapping or 
 THREE.MirroredRepeatWrapping to achieve the desired tiling effect.
-*/
- black_Noise_Texture.repeat.set( 1, 1 , 1 );
 
+LINE 27:
+.background defines the sky assigned it my custom texture. can take a colour, texture and "SKYBOX?????"
 
-
-const scene = new THREE.Scene()
-
-//change scene background
-scene.background = black_Noise_Texture;
-
-
-/*   
+LINE:30 
 uses the perspectiveCamera from THREE.js. there are other cameras.
+attributes are field of view, aspect ratio, near and f
 
-attributes are:
-field of view, aspect ratio, near and far
-*/
-let camera = new THREE.PerspectiveCamera(75,window.innerWidth / 
-window.innerHeight,0.1, 1000 );
-
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight, false);
-document.body.appendChild(renderer.domElement,Element);
-
-const controls = new PointerLockControls(camera, document.body);
-
-
-
-
-/*
+LINE 40: 
 this object BoxGeometry will contain all the points for the 
 vertices(a point where two or more line segments meet.In this case
-    the corner of the box)
+    the 4 corner of the box)
 and fill the faces of the box
+
+
+LINE: 49
+a mesh needs a geometry and a material
 */
+const loader = new THREE.TextureLoader();
+const black_Noise_Texture = new THREE.TextureLoader().load( "textures/scenebackground.jpg" );
+  black_Noise_Texture.wrapS = THREE.RepeatWrapping;
+  black_Noise_Texture.wrapT = THREE.RepeatWrapping;
+  black_Noise_Texture.repeat.set( 1, 1 , 1 );
+const scene = new THREE.Scene()
+  scene.background = black_Noise_Texture;
+const camera = new THREE.PerspectiveCamera(75,window.innerWidth / window.innerHeight,0.1, 1000 );
+const renderer = new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight, false);
+const controls = new PointerLockControls(camera, document.body);
+document.body.appendChild(renderer.domElement,Element);
 const geometry = new THREE.BoxGeometry(1,1,1);
-
-//Basic cub etexture
 const material = new THREE.MeshBasicMaterial({color:0x00ff00});
-
-//Basic mesh or model i think is another word?
 const cube = new THREE.Mesh(geometry, material);
-
-
-// plane geometry
-const planeGeometry = new THREE.PlaneGeometry(100,100);
-
-//plane material
-const planeMaterial = new THREE.MeshBasicMaterial({color:0x999999, map: loader.load('textures/cobble.jpg'),});
-
-//plane mesh
-const plane = new THREE.Mesh(planeGeometry,planeMaterial);
-
-
-/*
-when function called the mesh added 
-will be added to coordinates (0,0,0)
-by default
-*/
-scene.add(cube);
-cube.position.set(0,1,-6);
-scene.add(plane);
-plane.position.set(0,-2,-10);
-plane.rotateX(-1.570796)
-/* 
-gotta change the camera z position 
-so we can view the object. By default it is also 0
-*/
-// camera.position.z=2;
-
-
-// camera.rotation.z = Math.PI * 4;
-
-
-// this listens for keypresses and excutes move function part of the pointerlock
-document.addEventListener('keydown', function (){
-    if (event.key === "w" || event.key === "W") {
-       controls.moveForward(0.2);
-  }}, false);
-
-document.addEventListener('keydown', function (){
-    if (event.key === "s" || event.key === "S") {
-    controls.moveForward(-0.2);
-  }}, false);
-
-document.addEventListener('keydown', function (){
-    if (event.key === "a" || event.key === "A") {
-   controls.moveRight(-0.2);
-  }}, false);
-
-document.addEventListener('keydown', function (){
-    if (event.key === "d" || event.key === "D") {
-    controls.moveRight(0.2);
-  }}, false);
+  scene.add(cube);
+  cube.position.set(0,1,-6);
+const plane_Geometry = new THREE.PlaneGeometry(100,100);
+const plane_Material = new THREE.MeshBasicMaterial({color:0x999999, map: loader.load('textures/cobble.jpg'),});
+const plane = new THREE.Mesh(plane_Geometry,plane_Material);
+  scene.add(plane);
+  plane.position.set(0,-2,0);
+  plane.rotateX(-1.570796)
 
 
 
 
-//locks the mouse to the rendered scene
+// these two fucntions triggers the movment functions of pointerlock
+// const forwardAndBack = (event) => {
+//   switch (event.key) {
+//     case 'w':
+//       controls.moveForward(moveSpeed);
+//       break;
+//     case 's':
+//       controls.moveForward(-moveSpeed);
+//       break;
+//   }
+// }
+
+// const leftAndRight = (event) => {
+//   switch (event.key) {
+//     case 'a':
+//       controls.moveRight(-moveSpeed);
+//       break;
+//     case 'd':
+//       controls.moveRight(moveSpeed);
+//       break;
+//   }
+// }
+
+// addEventListener('keypressed', forwardAndBack);
+// addEventListener('keypressed', leftAndRight);
+
+
+let isJumping = false;
+let verticalVelocity = 0;
+const jumpHeight = 1.5;
+const gravity = 0.02;
+let keys =[];
+
+document.addEventListener('keydown',(event) => {
+  keys[event.key]= true;
+  if (event.key==" ") {
+    isJumping = true;
+    verticalVelocity = 0.4; // Initial jump velocity
+    keys[event.key]= false;
+  }
+
+});
+document.addEventListener('keyup',(event) => {
+  keys[event.key]= false;
+});
+
+function keyboardControls(){
+
+  if(keys['w']){
+    controls.moveForward(moveSpeed);
+  }
+  if(keys['s']){
+    controls.moveForward(-moveSpeed);
+  }
+  if(keys['a']){
+    controls.moveRight(-moveSpeed);
+  }
+  if(keys['d']){
+    controls.moveRight(moveSpeed);
+  }
+  if(keys[" "]){
+    
+  }
+}
+
 document.addEventListener('click', () => {
   controls.lock();
 });
 
 
+
+
 function animate() {
-    
+  if (isJumping) {
+    verticalVelocity -= gravity;
+    controls.getObject().position.y += verticalVelocity;
+
+    // If camera reaches the ground, stop jumping
+    if (controls.getObject().position.y < 0) {
+      isJumping = false;
+      controls.getObject().position.y = 1;
+      verticalVelocity = 0;
+    }
+  }
 	requestAnimationFrame( animate );
-    
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
-	 renderer.render( scene, camera );
-   
+  keyboardControls();
+  cube.rotation.x += 0.01;
+  cube.rotation.y += 0.01;
+	renderer.render( scene, camera );
 }
 animate();
 
