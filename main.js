@@ -81,40 +81,40 @@ will be added to coordinates (0,0,0)
 by default
 */
 scene.add(cube);
-cube.position.set(0,10,1);
+cube.position.set(0,1,-6);
 scene.add(plane);
-plane.position.set(0,0,-2);
-
+plane.position.set(0,-2,-10);
+plane.rotateX(-1.570796)
 /* 
 gotta change the camera z position 
 so we can view the object. By default it is also 0
 */
 // camera.position.z=2;
 
-camera.rotation.x = Math.PI * 0.5;
+
 // camera.rotation.z = Math.PI * 4;
 
 
 // this listens for keypresses and excutes 
-// document.addEventListener('keydown', function (){
-//     if (event.key === "w" || event.key === "W") {
-//         camera.position.y +=0.09;
-//   }}, false);
+document.addEventListener('keydown', function (){
+    if (event.key === "w" || event.key === "W") {
+        camera.position.z +=0.09;
+  }}, false);
 
-// document.addEventListener('keydown', function (){
-//     if (event.key === "s" || event.key === "S") {
-//     camera.position.y +=-0.09;
-//   }}, false);
+document.addEventListener('keydown', function (){
+    if (event.key === "s" || event.key === "S") {
+    camera.position.z +=-0.09;
+  }}, false);
 
-// document.addEventListener('keydown', function (){
-//     if (event.key === "a" || event.key === "A") {
-//     camera.position.x +=-0.09;
-//   }}, false);
+document.addEventListener('keydown', function (){
+    if (event.key === "a" || event.key === "A") {
+    camera.position.x +=-0.09;
+  }}, false);
 
-// document.addEventListener('keydown', function (){
-//     if (event.key === "d" || event.key === "D") {
-//     camera.position.x +=0.09;
-//   }}, false);
+document.addEventListener('keydown', function (){
+    if (event.key === "d" || event.key === "D") {
+    camera.position.x +=0.09;
+  }}, false);
 
 
 
