@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
-
+import { Player } from '/player.js';
 
 
 
@@ -52,10 +52,11 @@ const black_Noise_Texture = new THREE.TextureLoader().load( "textures/scenebackg
 const scene = new THREE.Scene()
   scene.background = black_Noise_Texture;
 const camera = new THREE.PerspectiveCamera(75,window.innerWidth / window.innerHeight,0.1, 1000 );
+  let camera_Position=camera.position;
 const renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight, false);
-const controls = new PointerLockControls(camera, document.body);
-document.body.appendChild(renderer.domElement,Element);
+const controls = new PointerLockControls(camera, document.body);  
+  document.body.appendChild(renderer.domElement);
 const geometry = new THREE.BoxGeometry(1,1,1);
 const material = new THREE.MeshBasicMaterial({color:0x00ff00});
 const cube = new THREE.Mesh(geometry, material);
@@ -66,8 +67,13 @@ const plane_Material = new THREE.MeshBasicMaterial({color:0x999999, map: loader.
 const plane = new THREE.Mesh(plane_Geometry,plane_Material);
   scene.add(plane);
   plane.position.set(0,-2,0);
-  plane.rotateX(-1.570796)
+  plane.rotateX(-1.570796);
+let player=new Player;
 
+
+
+
+//send coordiantes to the scree
 
 
 
@@ -90,7 +96,12 @@ document.addEventListener('click', () => {
 });
 
 function keyboardControls(){
-
+  player.xAxis=camera.position.x;
+  player.yAxis=camera.position.y;
+  player.zAxis=camera.position.z;
+  document.getElementById('x').innerText="x : ".concat(player.xAxis.toFixed(2))
+  document.getElementById('y').innerText="y : ".concat(player.yAxis.toFixed(2))
+  document.getElementById('z').innerText="z : ".concat(player.zAxis.toFixed(2))
   if(keys['w']){
     controls.moveForward(moveSpeed);
   }
