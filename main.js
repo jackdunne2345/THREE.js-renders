@@ -5,6 +5,11 @@ import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockCont
 
 
 const moveSpeed = 0.25;
+let isJumping = false;
+let verticalVelocity = 0;
+
+const gravity = 0.02;
+
 
 
 
@@ -66,50 +71,22 @@ const plane = new THREE.Mesh(plane_Geometry,plane_Material);
 
 
 
-// these two fucntions triggers the movment functions of pointerlock
-// const forwardAndBack = (event) => {
-//   switch (event.key) {
-//     case 'w':
-//       controls.moveForward(moveSpeed);
-//       break;
-//     case 's':
-//       controls.moveForward(-moveSpeed);
-//       break;
-//   }
-// }
-
-// const leftAndRight = (event) => {
-//   switch (event.key) {
-//     case 'a':
-//       controls.moveRight(-moveSpeed);
-//       break;
-//     case 'd':
-//       controls.moveRight(moveSpeed);
-//       break;
-//   }
-// }
-
-// addEventListener('keypressed', forwardAndBack);
-// addEventListener('keypressed', leftAndRight);
-
-
-let isJumping = false;
-let verticalVelocity = 0;
-const jumpHeight = 1.5;
-const gravity = 0.02;
+// keps track of button presses to trigger actions 
 let keys =[];
 
 document.addEventListener('keydown',(event) => {
   keys[event.key]= true;
-  if (event.key==" ") {
-    isJumping = true;
-    verticalVelocity = 0.4; // Initial jump velocity
-    keys[event.key]= false;
-  }
-
 });
+
 document.addEventListener('keyup',(event) => {
   keys[event.key]= false;
+});
+
+document.addEventListener('click', shoot);
+
+//locks camera control
+document.addEventListener('click', () => {
+  controls.lock();
 });
 
 function keyboardControls(){
@@ -127,18 +104,38 @@ function keyboardControls(){
     controls.moveRight(moveSpeed);
   }
   if(keys[" "]){
+    switch(isJumping){
+      case true:
+        keys[" "]= false;
+      break;
+      case false:
+        isJumping = true;
+        verticalVelocity = 0.4; // initial jump velocity
+        keys[" "]= false;
+      break;
+    }
     
   }
 }
 
-document.addEventListener('click', () => {
-  controls.lock();
-});
+function shoot(){
+
+}
 
 
 
+//create a blue LineBasicMaterial
+// const line_Material = new THREE.LineBasicMaterial( { color: 0x0000ff } );
+// const points = [];
+// points.push( new THREE.Vector3( - 10, 0, 0 ) );
+// points.push( new THREE.Vector3( 0, 10, 0 ) );
+// points.push( new THREE.Vector3( 10, 0, 0 ) );
+// const line_Geometry = new THREE.BufferGeometry().setFromPoints( points );
+// const line = new THREE.Line( line_Geometry, line_Material );
+// scene.add( line );
 
 function animate() {
+  keepInBounds();
   if (isJumping) {
     verticalVelocity -= gravity;
     controls.getObject().position.y += verticalVelocity;
@@ -146,16 +143,33 @@ function animate() {
     // If camera reaches the ground, stop jumping
     if (controls.getObject().position.y < 0) {
       isJumping = false;
-      controls.getObject().position.y = 1;
+      controls.getObject().position.y = 0;
       verticalVelocity = 0;
     }
   }
 	requestAnimationFrame( animate );
   keyboardControls();
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
+ 
 	renderer.render( scene, camera );
 }
+
+function keepInBounds(){
+  if(camera.position.x>50){
+    camera.position.x=-49;
+  }
+  if(camera.position.z>50){
+    camera.position.z=-49;
+  }
+  if(camera.position.x<-50){
+    camera.position.x=49;
+  }
+  if(camera.position.z<-50){
+    camera.position.z=49;
+  }
+
+}
+
+
 animate();
 
 
