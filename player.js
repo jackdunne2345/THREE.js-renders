@@ -5,4 +5,5 @@ export class Player {
     this.yAxis=yAxis;
     this.zAxis=zAxis;
    };
+
 }

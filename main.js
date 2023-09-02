@@ -1,15 +1,15 @@
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
 import { Player } from '/player.js';
-
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 
 const moveSpeed = 0.25;
 let isJumping = false;
 let verticalVelocity = 0;
-
+let player=new Player;
 const gravity = 0.02;
-
+let pistol = new THREE.Mesh();
 
 
 
@@ -43,9 +43,12 @@ and fill the faces of the box
 
 LINE: 49
 a mesh needs a geometry and a material
+
+LINE:71
+pistol gemoetry, material and mesh
 */
 const loader = new THREE.TextureLoader();
-const black_Noise_Texture = new THREE.TextureLoader().load( "textures/scenebackground.jpg" );
+const black_Noise_Texture = new THREE.TextureLoader().load( "assets/textures/scenebackground.jpg" );
   black_Noise_Texture.wrapS = THREE.RepeatWrapping;
   black_Noise_Texture.wrapT = THREE.RepeatWrapping;
   black_Noise_Texture.repeat.set( 1, 1 , 1 );
@@ -63,17 +66,27 @@ const cube = new THREE.Mesh(geometry, material);
   scene.add(cube);
   cube.position.set(0,1,-6);
 const plane_Geometry = new THREE.PlaneGeometry(100,100);
-const plane_Material = new THREE.MeshBasicMaterial({color:0x999999, map: loader.load('textures/cobble.jpg'),});
+const plane_Material = new THREE.MeshBasicMaterial({color:0x999999, map: loader.load('assets/textures/cobble.jpg'),});
 const plane = new THREE.Mesh(plane_Geometry,plane_Material);
   scene.add(plane);
   plane.position.set(0,-2,0);
   plane.rotateX(-1.570796);
-let player=new Player;
+const gltf_Loader = new GLTFLoader();
+gltf_Loader.load( 'assets/models/pistol.glb', function ( gltf ) {
+  pistol=gltf.scene;
+  scene.add( gltf.scene );
+
+}, undefined, function ( error ) {
+
+	console.error( error );
+
+} );
+const light = new THREE.AmbientLight( 0x404040 ); // soft white light
+scene.add( light );
 
 
 
-
-//send coordiantes to the scree
+//send coordiantes to the screen
 
 
 
@@ -135,6 +148,28 @@ function shoot(){
 
 
 
+
+function updateObjectPosition() {
+  // Get the camera's position and direction
+  const cameraPosition = camera.position.clone();
+  const cameraDirection = camera.getWorldDirection(new THREE.Vector3());
+  const cameraRight = camera.getWorldDirection(new THREE.Vector3()).cross(camera.up);
+  const offsetX = 2
+  const distanceFromCamera = 2;
+  // Calculate the new position for the object based on the camera's position, direction, and offset
+  const offsetVector = cameraRight.clone().multiplyScalar(offsetX);
+  const newPosition = cameraPosition.clone().add(cameraDirection.clone().multiplyScalar(distanceFromCamera)).add(offsetVector);
+
+ 
+  
+
+  
+  // Set the object's position
+  pistol.position.copy(newPosition);
+  pistol.rotation.copy(camera.rotation)
+}
+
+
 //create a blue LineBasicMaterial
 // const line_Material = new THREE.LineBasicMaterial( { color: 0x0000ff } );
 // const points = [];
@@ -146,6 +181,7 @@ function shoot(){
 // scene.add( line );
 
 function animate() {
+  updateObjectPosition();
   keepInBounds();
   if (isJumping) {
     verticalVelocity -= gravity;
